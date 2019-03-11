@@ -26,7 +26,9 @@ Builder.load_string('''
 
 <AppScreens@ScreenManager>:
 	MainScreen:
+		id: mainScr
 	ViewScreen:
+		id: viewScr
 
 <ViewScreen>:
 	name: "viewScr"
@@ -133,8 +135,9 @@ Builder.load_string('''
 ''')
 
 class ViewScreen(Screen):
-	
-	store = JsonStore("data.json")
+	def __init__(self, **kwargs):
+		super(ViewScreen, self).__init__(**kwargs)
+		self.store = timeTrackingApp.storeData
 
 	def on_enter(self):
 		for entryNmb in self.store:
@@ -145,8 +148,10 @@ class ViewScreen(Screen):
 				self.ids.rv.data.append(data)
 
 class MainScreen(Screen):
-
-	store = JsonStore("data.json")
+	def __init__(self, **kwargs):
+		super(MainScreen, self).__init__(**kwargs)
+		Clock.schedule_interval(self.dateTimeUpdate, 1)
+		self.store = timeTrackingApp.storeData
 
 	def dateTimeUpdate(self, *args):
 		timeAndDate = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
@@ -180,10 +185,12 @@ class MainScreen(Screen):
 			return 0
 
 class timeTrackingApp(App):
+	
+	storeData = JsonStore("data.json")
 
 	def build(self):
+		
 		self.screen = Factory.AppScreens()
-		#Clock.schedule_interval(startScreen.dateTimeUpdate, 1)
 		return self.screen
 
 if __name__ == "__main__":
