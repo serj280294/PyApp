@@ -81,20 +81,22 @@ Builder.load_string('''
 		Label:
 			size_hint_y: .1
 			id: time
+			name: "time"
 			text_size: self.size
 			halign: 'center'
     		valign: 'bottom'
 			font_size: 30
-			text: "00:00:00"
+			text: root.getTimeDate(self.name)
 
 		Label:
 			size_hint_y: .1
 			id: date
+			name: "date"
 			text_size: self.size
 			halign: 'center'
     		valign: 'top'
 			font_size: 16
-			text: "00.00.0000"
+			text: root.getTimeDate(self.name)
 
 		Label:
 			id: lastStateLabel
@@ -153,8 +155,17 @@ class MainScreen(Screen):
 		Clock.schedule_interval(self.dateTimeUpdate, 1)
 		self.store = timeTrackingApp.storeData
 
+	def getTimeDate(self, labelName=None):
+		if labelName == "time":
+			return datetime.datetime.today().strftime("%H:%M:%S")
+		elif labelName == "date":
+			return datetime.datetime.today().strftime("%d.%m.%Y")
+		else:
+			return datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
+
+
 	def dateTimeUpdate(self, *args):
-		timeAndDate = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
+		timeAndDate = self.getTimeDate()
 		self.ids.time.text, self.ids.date.text = timeAndDate
 
 	def pressed(self, stateText):
