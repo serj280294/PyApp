@@ -21,6 +21,8 @@ import datetime
 from kivy.storage.jsonstore import JsonStore
 from kivy.factory import Factory
 
+from kivy.uix.boxlayout import BoxLayout
+
 Builder.load_string('''
 #:kivy 1.10.1
 
@@ -56,11 +58,23 @@ Builder.load_string('''
             key_viewclass: 'viewclass'
 
             RecycleBoxLayout:
-                default_size: None, dp(20)
+                default_size: None, dp(50)
                 default_size_hint: 1, None
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
+<StateElem>:
+	orientation: 'horizontal'
+	state: ""
+	entryKey: ""
+
+	Label:
+		text: root.state
+
+	Button:
+		size_hint_x: .3
+		on_press: delState(root.entryKey)
+		text: "Del"
 
 <MainScreen>:
 	name: "mainScr"
@@ -136,6 +150,9 @@ Builder.load_string('''
 
 ''')
 
+class StateElem(BoxLayout):
+	pass
+
 class ViewScreen(Screen):
 	def __init__(self, **kwargs):
 		super(ViewScreen, self).__init__(**kwargs)
@@ -145,9 +162,12 @@ class ViewScreen(Screen):
 		for entryNmb in self.store:
 			entry = self.store.get(entryNmb)
 			infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
-			data = {"viewclass": "Label", "text": infoStr}
+			data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb}
 			if data not in self.ids.rv.data:
 				self.ids.rv.data.append(data)
+
+	def delState(self, entryKey):
+		print(entryKey)
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
