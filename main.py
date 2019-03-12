@@ -32,50 +32,6 @@ Builder.load_string('''
 	ViewScreen:
 		id: viewScr
 
-<ViewScreen>:
-	name: "viewScr"
-
-	BoxLayout:
-		orientation: "vertical"
-		Button:
-			size_hint_y: None
-			height: dp(50)
-			text: "Back"
-			on_press: app.screen.current = "mainScr"
-
-		Label:
-			font_size: 30
-			size_hint_y: None
-			height: dp(50)
-			text: "All states"
-
-		#Label:
-		#	font_size: 40
-		#	text: "test"
-
-        RecycleView:
-            id: rv
-            key_viewclass: 'viewclass'
-
-            RecycleBoxLayout:
-                default_size: None, dp(50)
-                default_size_hint: 1, None
-                size_hint_y: None
-                height: self.minimum_height
-                orientation: 'vertical'
-<StateElem>:
-	orientation: 'horizontal'
-	state: ""
-	entryKey: ""
-
-	Label:
-		text: root.state
-
-	Button:
-		size_hint_x: .3
-		on_press: delState(root.entryKey)
-		text: "Del"
-
 <MainScreen>:
 	name: "mainScr"
 	BoxLayout:
@@ -148,6 +104,50 @@ Builder.load_string('''
 				text: "Sleep"
 				on_press: root.pressed(self.text)
 
+<ViewScreen>:
+	name: "viewScr"
+
+	BoxLayout:
+		orientation: "vertical"
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Back"
+			on_press: app.screen.current = "mainScr"
+
+		Label:
+			font_size: 30
+			size_hint_y: None
+			height: dp(50)
+			text: "All states"
+
+		#Label:
+		#	font_size: 40
+		#	text: "test"
+
+        RecycleView:
+            id: rv
+            key_viewclass: 'viewclass'
+
+            RecycleBoxLayout:
+                default_size: None, dp(50)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+<StateElem>:
+	orientation: 'horizontal'
+	state: ""
+	entryKey: ""
+
+	Label:
+		text: root.state
+
+	Button:
+		size_hint_x: .3
+		on_press: root.initWin.delState(root.entryKey)
+		text: "Del"
+
 ''')
 
 class StateElem(BoxLayout):
@@ -159,15 +159,22 @@ class ViewScreen(Screen):
 		self.store = timeTrackingApp.storeData
 
 	def on_enter(self):
+		self.updateStatesList()
+
+	def delState(self, entryKey):
+		print(self.store.keys())
+		self.store.delete(entryKey)	
+		self.updateStatesList()
+
+	def updateStatesList(self):
+		self.ids.rv.data = []
+
 		for entryNmb in self.store:
 			entry = self.store.get(entryNmb)
 			infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
-			data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb}
+			data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
 			if data not in self.ids.rv.data:
 				self.ids.rv.data.append(data)
-
-	def delState(self, entryKey):
-		print(entryKey)
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
