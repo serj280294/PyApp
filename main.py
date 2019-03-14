@@ -31,6 +31,8 @@ Builder.load_string('''
 		id: mainScr
 	ViewScreen:
 		id: viewScr
+	DateSelectScreen:
+		id: dateSelectScr
 
 <MainScreen>:
 	name: "mainScr"
@@ -121,9 +123,11 @@ Builder.load_string('''
 			height: dp(50)
 			text: "All states"
 
-		#Label:
-		#	font_size: 40
-		#	text: "test"
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: root.getCurrentStatesData()
+			on_press: app.screen.current = "dateSelectScr"
 
         RecycleView:
             id: rv
@@ -148,7 +152,27 @@ Builder.load_string('''
 		on_press: root.initWin.delState(root.entryKey)
 		text: "Del"
 
+<DateSelectScreen>:
+	name: "dateSelectScr"
+
+	BoxLayout:
+		orientation: "vertical"
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Back"
+			on_press: app.screen.current = "viewScr"
+
+		Label:
+			font_size: 30
+			#size_hint_y: None
+			#height: dp(50)
+			text: "Select entrys day"
+
 ''')
+
+class DateSelectScreen(Screen):
+	pass
 
 class StateElem(BoxLayout):
 	pass
@@ -175,6 +199,12 @@ class ViewScreen(Screen):
 			data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
 			if data not in self.ids.rv.data:
 				self.ids.rv.data.append(data)
+
+		if not self.ids.rv.data:
+			self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
+
+	def getCurrentStatesData(self):
+		return datetime.datetime.today().strftime("%d.%m.%Y") + " (today)"
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
