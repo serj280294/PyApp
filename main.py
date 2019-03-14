@@ -124,6 +124,7 @@ Builder.load_string('''
 			text: "All states"
 
 		Button:
+			id: selectDateBtn
 			size_hint_y: None
 			height: dp(50)
 			text: root.getCurrentStatesData()
@@ -219,15 +220,21 @@ class ViewScreen(Screen):
 	def updateStatesList(self):
 		self.ids.rv.data = []
 
-		for entryNmb in self.store:
-			entry = self.store.get(entryNmb)
-			infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
-			data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
-			if data not in self.ids.rv.data:
-				self.ids.rv.data.append(data)
-
-		if not self.ids.rv.data:
-			self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
+		if not self.store:
+			self.ids.rv.data = [{"viewclass": "Label", "text": "No marks for all time."}]
+			self.ids.selectDateBtn.disabled = True
+		else:
+			self.ids.selectDateBtn.disabled = False
+			
+			for entryNmb in self.store:
+				entry = self.store.get(entryNmb)
+				infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
+				data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
+				if data not in self.ids.rv.data:
+					self.ids.rv.data.append(data)
+			
+				if not self.ids.rv.data:	
+					self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
 
 	def getCurrentStatesData(self):
 		return datetime.datetime.today().strftime("%d.%m.%Y") + " (today)"
