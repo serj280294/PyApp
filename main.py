@@ -165,14 +165,40 @@ Builder.load_string('''
 
 		Label:
 			font_size: 30
-			#size_hint_y: None
-			#height: dp(50)
+			size_hint_y: None
+			height: dp(50)
 			text: "Select entrys day"
+
+		RecycleView:
+            id: dateSelectList
+            key_viewclass: 'viewclass'
+
+            RecycleBoxLayout:
+                default_size: None, dp(50)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
 
 ''')
 
 class DateSelectScreen(Screen):
-	pass
+	def __init__(self, **kwargs):
+		super(DateSelectScreen, self).__init__(**kwargs)
+		self.store = timeTrackingApp.storeData
+
+	def on_enter(self):
+		self.updateDatesList()
+
+	def updateDatesList(self):
+		entrysDates = []
+
+		for key in self.store:
+			date = self.store.get(key)['date']
+			if date not in entrysDates:
+				entrysDates.append(date)
+
+		self.ids.dateSelectList.data = [{"viewclass": "Button", "text": date} for date in sorted(entrysDates, reverse=True)]
 
 class StateElem(BoxLayout):
 	pass
@@ -230,7 +256,7 @@ class MainScreen(Screen):
 		nextNumber = lastEntryNumber+1
 
 		state = stateText
-		date, time = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
+		time, date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
 
 		self.store.put(str(nextNumber), date=date, time=time, state=state)
 		
