@@ -225,7 +225,7 @@ class ViewScreen(Screen):
 		self.updateStatesList()
 
 	def delState(self, entryKey):
-		print(self.store.keys())
+		#print(self.store.keys())
 		self.store.delete(entryKey)	
 		self.updateStatesList()
 
@@ -248,13 +248,14 @@ class ViewScreen(Screen):
 			
 			for entryNmb in self.store:
 				entry = self.store.get(entryNmb)
-				infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
-				data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
-				if data not in self.ids.rv.data:
+				
+				if entry['date'] == self.currentDate:
+					infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
+					data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
 					self.ids.rv.data.append(data)
 			
-				if not self.ids.rv.data:	
-					self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
+			if not self.ids.rv.data:	
+				self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
