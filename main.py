@@ -47,7 +47,9 @@ Builder.load_string('''
 
 			Button:
 				text: "View all states"
-				on_press: app.screen.current = 'viewScr'
+				on_press: 
+					app.screen.transition.direction = 'left'; \
+					app.screen.current = 'viewScr'
 			Button:
 				text: "Statistic"
 
@@ -116,7 +118,9 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_press: app.screen.current = "mainScr"
+			on_press:
+				app.screen.transition.direction = 'right'; \
+				app.screen.current = "mainScr"
 
 		Label:
 			font_size: 30
@@ -129,7 +133,9 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: root.currentDate
-			on_press: app.screen.current = "dateSelectScr"
+			on_press:
+				app.screen.transition.direction = 'left'; \
+				app.screen.current = "dateSelectScr"
 
         RecycleView:
             id: rv
@@ -163,7 +169,9 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_press: app.screen.current = "viewScr"
+			on_press:
+				app.screen.transition.direction = 'right'; \
+				app.screen.current = "viewScr"
 
 		Label:
 			font_size: 30
@@ -185,6 +193,7 @@ Builder.load_string('''
 <DateSelectItem>:
 	on_press:
 		app.screen.get_screen('viewScr').currentDate = self.text; \
+		app.screen.transition.direction = 'right'; \
 		app.screen.current = "viewScr"
 
 ''')
