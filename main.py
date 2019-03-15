@@ -22,6 +22,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.factory import Factory
 
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 
 Builder.load_string('''
 #:kivy 1.10.1
@@ -127,7 +128,7 @@ Builder.load_string('''
 			id: selectDateBtn
 			size_hint_y: None
 			height: dp(50)
-			text: root.getCurrentStatesData()
+			text: root.currentDate
 			on_press: app.screen.current = "dateSelectScr"
 
         RecycleView:
@@ -181,7 +182,13 @@ Builder.load_string('''
                 height: self.minimum_height
                 orientation: 'vertical'
 
+<DateSelectItem>:
+	on_press: app.screen.get_screen('viewScr').currentDate = self.text
+
 ''')
+
+class DateSelectItem(Button):
+	pass
 
 class DateSelectScreen(Screen):
 	def __init__(self, **kwargs):
@@ -192,30 +199,43 @@ class DateSelectScreen(Screen):
 		self.updateDatesList()
 
 	def updateDatesList(self):
-		entrysDates = []
+		#self.ids.dateSelectList.data = []
 
+		entrysDates = []
 		for key in self.store:
 			date = self.store.get(key)['date']
 			if date not in entrysDates:
 				entrysDates.append(date)
-
-		self.ids.dateSelectList.data = [{"viewclass": "Button", "text": date} for date in sorted(entrysDates, reverse=True)]
+		
+		self.ids.dateSelectList.data = [{"viewclass": "DateSelectItem", "text": date} for date in sorted(entrysDates, reverse=True)]
 
 class StateElem(BoxLayout):
 	pass
 
 class ViewScreen(Screen):
+
+	currentDate = datetime.datetime.today().strftime("%d.%m.%Y")
+
 	def __init__(self, **kwargs):
 		super(ViewScreen, self).__init__(**kwargs)
 		self.store = timeTrackingApp.storeData
 
 	def on_enter(self):
+		self.updateCurrentDateButton()
 		self.updateStatesList()
 
 	def delState(self, entryKey):
 		print(self.store.keys())
 		self.store.delete(entryKey)	
 		self.updateStatesList()
+
+	def updateCurrentDateButton(self):
+		selectedDateStr = self.currentDate
+
+		if selectedDateStr == datetime.datetime.today().strftime("%d.%m.%Y"):
+			selectedDateStr += " (today)"
+
+		self.ids.selectDateBtn.text = selectedDateStr
 
 	def updateStatesList(self):
 		self.ids.rv.data = []
@@ -235,9 +255,6 @@ class ViewScreen(Screen):
 			
 				if not self.ids.rv.data:	
 					self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
-
-	def getCurrentStatesData(self):
-		return datetime.datetime.today().strftime("%d.%m.%Y") + " (today)"
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
