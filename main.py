@@ -5,13 +5,12 @@ Config.set('graphics', 'multisamples', '0')
 
 from kivy.app import App
 from kivy.uix.widget import Widget
-
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 #Config.set('graphics', 'resizable', '0')
 #Config.set('graphics', 'fullscreen', '0')
-Config.set('graphics', 'height', '640')
-Config.set('graphics', 'width', '360')
+#Config.set('graphics', 'height', '640')
+#Config.set('graphics', 'width', '360')
 
 from kivy.lang import Builder
 
@@ -50,6 +49,8 @@ Builder.load_string('''
 				on_press: 
 					app.screen.transition.direction = 'left'; \
 					app.screen.current = 'viewScr'
+					app.screen.get_screen('viewScr').currentDate = ""
+
 			Button:
 				text: "Statistic"
 
@@ -225,7 +226,7 @@ class StateElem(BoxLayout):
 
 class ViewScreen(Screen):
 
-	currentDate = datetime.datetime.today().strftime("%d.%m.%Y")
+	currentDate = ""
 
 	def __init__(self, **kwargs):
 		super(ViewScreen, self).__init__(**kwargs)
@@ -241,6 +242,9 @@ class ViewScreen(Screen):
 		self.updateStatesList()
 
 	def updateCurrentDateButton(self):
+		if not self.currentDate:
+			self.currentDate = datetime.datetime.today().strftime("%d.%m.%Y")
+
 		selectedDateStr = self.currentDate
 
 		if selectedDateStr == datetime.datetime.today().strftime("%d.%m.%Y"):
