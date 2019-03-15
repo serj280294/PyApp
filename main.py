@@ -278,6 +278,9 @@ class MainScreen(Screen):
 		Clock.schedule_interval(self.dateTimeUpdate, 1)
 		self.store = timeTrackingApp.storeData
 
+	def on_enter(self):
+		self.updateLastState()
+
 	def getTimeDate(self, labelName=None):
 		if labelName == "time":
 			return datetime.datetime.today().strftime("%H:%M:%S")
@@ -285,7 +288,6 @@ class MainScreen(Screen):
 			return datetime.datetime.today().strftime("%d.%m.%Y")
 		else:
 			return datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
-
 
 	def dateTimeUpdate(self, *args):
 		timeAndDate = self.getTimeDate()
@@ -300,17 +302,22 @@ class MainScreen(Screen):
 
 		self.store.put(str(nextNumber), date=date, time=time, state=state)
 		
-		self.updateLastState(nextNumber)
+		self.updateLastState()
+
+	def updateLastState(self):
+		if self.ids:
+			self.ids.lastStateLabel.text = self.getLastState()
 
 	def getLastState(self):
 		lastEntryNumber = self.getLastEntryNumber()
-		if lastEntryNumber == 0:
-			return "Last state: not exist"
-		else:
-			return "Last state: " + self.store.get(str(lastEntryNumber))['state']
 
-	def updateLastState(self, entryNumber):
-		self.ids.lastStateLabel.text = "Last state: " + self.store.get(str(entryNumber))['state']
+		if lastEntryNumber == 0:
+			return "No states in database"
+		
+		if self.store.get(str(lastEntryNumber))['date'] == datetime.datetime.today().strftime("%d.%m.%Y"):
+			return "Last state today: " + self.store.get(str(lastEntryNumber))['state']
+		else:
+			return "Last state today: not exist"
 
 	def getLastEntryNumber(self):
 		if (self.store):
