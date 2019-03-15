@@ -183,7 +183,9 @@ Builder.load_string('''
                 orientation: 'vertical'
 
 <DateSelectItem>:
-	on_press: app.screen.get_screen('viewScr').currentDate = self.text
+	on_press:
+		app.screen.get_screen('viewScr').currentDate = self.text; \
+		app.screen.current = "viewScr"
 
 ''')
 
