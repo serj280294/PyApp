@@ -9,8 +9,8 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 #Config.set('graphics', 'resizable', '0')
 #Config.set('graphics', 'fullscreen', '0')
-#Config.set('graphics', 'height', '640')
-#Config.set('graphics', 'width', '360')
+Config.set('graphics', 'height', '640')
+Config.set('graphics', 'width', '360')
 
 from kivy.lang import Builder
 
@@ -33,6 +33,8 @@ Builder.load_string('''
 		id: viewScr
 	DateSelectScreen:
 		id: dateSelectScr
+	NewTaskScreen:
+		id: newTaskScr
 
 <MainScreen>:
 	name: "mainScr"
@@ -74,14 +76,28 @@ Builder.load_string('''
 			font_size: 16
 			text: root.getTimeDate(self.name)
 
-		Label:
-			id: lastStateLabel
-			size_hint_y: .05
-			text_size: self.size
-			halign: 'center'
-    		valign: 'center'
-			font_size: 16
-			text: root.getLastState()
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(50)
+			spacing: dp(20)
+			
+			Button:
+				size_hint_x: None
+				width: dp(50)
+				font_size: 30
+				text: "+"
+				on_press: 
+					app.screen.transition.direction = 'right'; \
+					app.screen.current = "newTaskScr"
+			
+			Label:
+				id: lastStateLabel
+				text_size: self.size
+				halign: 'left'
+    			valign: 'center'
+				font_size: 18
+				text: root.getLastState()
 			
 		BoxLayout:
 			orientation: 'vertical'
@@ -197,7 +213,29 @@ Builder.load_string('''
 		app.screen.transition.direction = 'right'; \
 		app.screen.current = "viewScr"
 
+<NewTaskScreen>:
+	name: "newTaskScr"
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Back"
+			on_press:
+				app.screen.transition.direction = 'left'; \
+				app.screen.current = "mainScr"
+
+		Label:
+			font_size: 30
+			#size_hint_y: None
+			#height: dp(50)
+			text: "New task screen"
 ''')
+
+class NewTaskScreen(Screen):
+	pass
 
 class DateSelectItem(Button):
 	pass
