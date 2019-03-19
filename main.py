@@ -227,6 +227,19 @@ Builder.load_string('''
 				app.screen.transition.direction = 'left'; \
 				app.screen.current = "mainScr"
 
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(30)
+			Label:
+				size_hint_x: .4
+				text: "Task name:"
+
+			TextInput:
+				size_hint_x: .6
+				multiline: False
+				padding_y: self.height / 2 - self.line_height / 2
+
 		Label:
 			font_size: 30
 			#size_hint_y: None
