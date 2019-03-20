@@ -218,7 +218,8 @@ Builder.load_string('''
 
 	BoxLayout:
 		orientation: 'vertical'
-
+		spacing: dp(10)
+		
 		Button:
 			size_hint_y: None
 			height: dp(50)
@@ -232,13 +233,49 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(30)
 			Label:
-				size_hint_x: .4
+				size_hint_x: .3
 				text: "Task name:"
 
 			TextInput:
-				size_hint_x: .6
+				size_hint_x: .7
 				multiline: False
 				padding_y: self.height / 2 - self.line_height / 2
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(50)
+			
+			ToggleButton:
+				text: "MON"
+			ToggleButton:
+				text: "TUE"
+			ToggleButton:
+				text: "WEN"
+			ToggleButton:
+				text: "THU"
+			ToggleButton:
+				text: "FRI"
+			ToggleButton:
+				text: "SAT"
+			ToggleButton:
+				text: "SUN"
+
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint_y: None
+			height: dp(80)
+			
+			Label:
+				text: "Task time"
+
+			TextInput:
+				size_hint_y: None
+				height: dp(50)
+				multiline: False
+				padding_y: self.height / 2 - self.line_height / 2
+				font_size: sp(30)
+				text: "21:10:00"
 
 		Label:
 			font_size: sp(30)
