@@ -63,7 +63,7 @@ Builder.load_string('''
 			text_size: self.size
 			halign: 'center'
     		valign: 'bottom'
-			font_size: 30
+			font_size: sp(30)
 			text: root.getTimeDate(self.name)
 
 		Label:
@@ -73,7 +73,7 @@ Builder.load_string('''
 			text_size: self.size
 			halign: 'center'
     		valign: 'top'
-			font_size: 16
+			font_size: sp(16)
 			text: root.getTimeDate(self.name)
 
 		BoxLayout:
@@ -85,7 +85,7 @@ Builder.load_string('''
 			Button:
 				size_hint_x: None
 				width: dp(50)
-				font_size: 30
+				font_size: sp(30)
 				text: "+"
 				on_press: 
 					app.screen.transition.direction = 'right'; \
@@ -96,7 +96,7 @@ Builder.load_string('''
 				text_size: self.size
 				halign: 'left'
     			valign: 'center'
-				font_size: 18
+				font_size: sp(18)
 				text: root.getLastState()
 			
 		BoxLayout:
@@ -140,7 +140,7 @@ Builder.load_string('''
 				app.screen.current = "mainScr"
 
 		Label:
-			font_size: 30
+			font_size: sp(30)
 			size_hint_y: None
 			height: dp(50)
 			text: "All states"
@@ -191,7 +191,7 @@ Builder.load_string('''
 				app.screen.current = "viewScr"
 
 		Label:
-			font_size: 30
+			font_size: sp(30)
 			size_hint_y: None
 			height: dp(50)
 			text: "Select entrys day"
@@ -241,7 +241,7 @@ Builder.load_string('''
 				padding_y: self.height / 2 - self.line_height / 2
 
 		Label:
-			font_size: 30
+			font_size: sp(30)
 			#size_hint_y: None
 			#height: dp(50)
 			text: "New task screen"
