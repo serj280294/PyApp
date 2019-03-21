@@ -48,7 +48,7 @@ Builder.load_string('''
 
 			Button:
 				text: "View all states"
-				on_press: 
+				on_release: 
 					app.screen.transition.direction = 'left'; \
 					app.screen.current = 'viewScr'
 					app.screen.get_screen('viewScr').currentDate = ""
@@ -87,7 +87,7 @@ Builder.load_string('''
 				width: dp(50)
 				font_size: sp(30)
 				text: "+"
-				on_press: 
+				on_release: 
 					app.screen.transition.direction = 'right'; \
 					app.screen.current = "newTaskScr"
 			
@@ -104,27 +104,27 @@ Builder.load_string('''
 				
 			Button:
 				text: "Awoke"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 		
 			Button:
 				text: "Go to work"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 	
 			Button:
 				text: "At work"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 
 			Button:
 				text: "Go home"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 
 			Button:
 				text: "At home"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 
 			Button:
 				text: "Sleep"
-				on_press: root.pressed(self.text)
+				on_release: root.pressed(self.text)
 
 <ViewScreen>:
 	name: "viewScr"
@@ -135,7 +135,7 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_press:
+			on_release:
 				app.screen.transition.direction = 'right'; \
 				app.screen.current = "mainScr"
 
@@ -150,7 +150,7 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: root.currentDate
-			on_press:
+			on_release:
 				app.screen.transition.direction = 'left'; \
 				app.screen.current = "dateSelectScr"
 
@@ -174,7 +174,7 @@ Builder.load_string('''
 
 	Button:
 		size_hint_x: .3
-		on_press: root.initWin.delState(root.entryKey)
+		on_release: root.initWin.delState(root.entryKey)
 		text: "Del"
 
 <DateSelectScreen>:
@@ -186,7 +186,7 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_press:
+			on_release:
 				app.screen.transition.direction = 'right'; \
 				app.screen.current = "viewScr"
 
@@ -208,7 +208,7 @@ Builder.load_string('''
                 orientation: 'vertical'
 
 <DateSelectItem>:
-	on_press:
+	on_release:
 		app.screen.get_screen('viewScr').currentDate = self.text; \
 		app.screen.transition.direction = 'right'; \
 		app.screen.current = "viewScr"
@@ -224,7 +224,7 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_press:
+			on_release:
 				app.screen.transition.direction = 'left'; \
 				app.screen.current = "mainScr"
 
@@ -275,13 +275,13 @@ Builder.load_string('''
 				multiline: False
 				padding_y: self.height / 2 - self.line_height / 2
 				font_size: sp(30)
-				text: "21:10:00"
-
+				padding_x: self.center[0] - self._get_text_width(self.text, self.tab_width, self._label_cached) / 2
+				
 		Label:
 			font_size: sp(30)
 			#size_hint_y: None
 			#height: dp(50)
-			text: "New task screen"
+			#text: "New task screen"
 ''')
 
 class NewTaskScreen(Screen):
