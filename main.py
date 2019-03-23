@@ -22,6 +22,7 @@ from kivy.factory import Factory
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 
 Builder.load_string('''
 #:kivy 1.10.1
@@ -164,6 +165,7 @@ Builder.load_string('''
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
+
 <StateElem>:
 	orientation: 'horizontal'
 	state: ""
@@ -173,9 +175,61 @@ Builder.load_string('''
 		text: root.state
 
 	Button:
-		size_hint_x: .3
-		on_release: root.initWin.delState(root.entryKey)
-		text: "Del"
+		size_hint_x: None
+		width: dp(70)
+		#on_release: root.initWin.delState(root.entryKey)
+		on_release: root.initWin.editState()
+		text: "Edit"
+
+<EditStatePopup>:
+	title: "Edit state"
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(30)
+
+			Label:
+				text: "Task name:"
+
+			TextInput:
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(30)
+
+			Label:
+				text: "State date:"
+
+			TextInput:
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(30)
+
+			Label:
+				text: "State time:"
+
+			TextInput:
+
+		Label:
+
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Delete state"
+			on_release: print(root)
+		
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Save and close"
+			on_release: root.dismiss()
 
 <DateSelectScreen>:
 	name: "dateSelectScr"
@@ -309,6 +363,9 @@ class DateSelectScreen(Screen):
 		
 		self.ids.dateSelectList.data = [{"viewclass": "DateSelectItem", "text": date} for date in sorted(entrysDates, reverse=True)]
 
+class EditStatePopup(Popup):
+	pass
+
 class StateElem(BoxLayout):
 	pass
 
@@ -323,6 +380,9 @@ class ViewScreen(Screen):
 	def on_enter(self):
 		self.updateCurrentDateButton()
 		self.updateStatesList()
+
+	def editState(self):
+		Factory.EditStatePopup().open()
 
 	def delState(self, entryKey):
 		#print(self.store.keys())
