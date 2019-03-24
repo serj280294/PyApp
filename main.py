@@ -169,7 +169,7 @@ Builder.load_string('''
 <StateElem>:
 	orientation: 'horizontal'
 	state: ""
-	entryKey: ""
+	entryKeyNmb: ""
 
 	Label:
 		text: root.state
@@ -178,11 +178,11 @@ Builder.load_string('''
 		size_hint_x: None
 		width: dp(70)
 		#on_release: root.initWin.delState(root.entryKey)
-		on_release: root.initWin.editState()
+		on_release: root.editState(root.entryKeyNmb)
 		text: "Edit"
 
 <EditStatePopup>:
-	title: "Edit state"
+	title: "Edit entry " + self.editEntryNumber
 
 	BoxLayout:
 		orientation: 'vertical'
@@ -222,8 +222,10 @@ Builder.load_string('''
 		Button:
 			size_hint_y: None
 			height: dp(50)
-			text: "Delete state"
-			on_release: print(root)
+			text: "Delete entry"
+			on_release: app.deleteEntry(root.editEntryNumber); 				 \
+						app.screen.get_screen('viewScr').updateStatesList(); \
+						root.dismiss()
 		
 		Button:
 			size_hint_y: None
@@ -364,10 +366,13 @@ class DateSelectScreen(Screen):
 		self.ids.dateSelectList.data = [{"viewclass": "DateSelectItem", "text": date} for date in sorted(entrysDates, reverse=True)]
 
 class EditStatePopup(Popup):
-	pass
+	
+	editEntryNumber = 0
 
 class StateElem(BoxLayout):
-	pass
+	def editState(self, entryNmb):
+		EditStatePopup.editEntryNumber = entryNmb
+		Factory.EditStatePopup().open()
 
 class ViewScreen(Screen):
 
@@ -379,14 +384,6 @@ class ViewScreen(Screen):
 
 	def on_enter(self):
 		self.updateCurrentDateButton()
-		self.updateStatesList()
-
-	def editState(self):
-		Factory.EditStatePopup().open()
-
-	def delState(self, entryKey):
-		#print(self.store.keys())
-		self.store.delete(entryKey)	
 		self.updateStatesList()
 
 	def updateCurrentDateButton(self):
@@ -414,7 +411,7 @@ class ViewScreen(Screen):
 				
 				if entry['date'] == self.currentDate:
 					infoStr = entryNmb + ' ' + entry['date'] + ' ' + entry['time'] + ' ' + entry['state']
-					data = {"viewclass": "StateElem", "state": infoStr, "entryKey": entryNmb, "initWin": self}
+					data = {"viewclass": "StateElem", "state": infoStr, "entryKeyNmb": entryNmb}
 					self.ids.rv.data.append(data)
 			
 			if not self.ids.rv.data:	
@@ -481,6 +478,9 @@ class timeTrackingApp(App):
 		
 		self.screen = Factory.AppScreens()
 		return self.screen
+
+	def deleteEntry(self, entryNmb):
+		self.storeData.delete(entryNmb)
 
 if __name__ == "__main__":
     timeTrackingApp().run()
