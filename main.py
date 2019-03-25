@@ -196,6 +196,8 @@ Builder.load_string('''
 				text: "Task name:"
 
 			TextInput:
+				id: taskName
+				disabled: True
 
 		BoxLayout:
 			orientation: 'horizontal'
@@ -206,6 +208,8 @@ Builder.load_string('''
 				text: "State date:"
 
 			TextInput:
+				id: stateDate
+				disabled: True
 
 		BoxLayout:
 			orientation: 'horizontal'
@@ -216,6 +220,7 @@ Builder.load_string('''
 				text: "State time:"
 
 			TextInput:
+				id: stateTime
 
 		Label:
 
@@ -231,7 +236,9 @@ Builder.load_string('''
 			size_hint_y: None
 			height: dp(50)
 			text: "Save and close"
-			on_release: root.dismiss()
+			on_release: root.saveChanges(); \
+						app.screen.get_screen('viewScr').updateStatesList(); \
+						root.dismiss()
 
 <DateSelectScreen>:
 	name: "dateSelectScr"
@@ -369,6 +376,25 @@ class EditStatePopup(Popup):
 	
 	editEntryNumber = 0
 
+	def __init__(self, **kwargs):
+		super(EditStatePopup, self).__init__(**kwargs)
+		self.store = timeTrackingApp.storeData
+
+	def on_open(self):
+		entryData = self.store.get(self.editEntryNumber)
+
+		self.ids['taskName'].text = entryData['state']
+		self.ids['stateDate'].text = entryData['date']
+		self.ids['stateTime'].text = entryData['time']
+
+	def saveChanges(self):
+		entryData = self.store.get(self.editEntryNumber)
+
+		if self.ids['stateTime'].text != entryData['time']:
+			self.store.put(self.editEntryNumber, state = entryData['state'],
+												 date = entryData['date'],
+												 time = self.ids['stateTime'].text)
+
 class StateElem(BoxLayout):
 	def editState(self, entryNmb):
 		EditStatePopup.editEntryNumber = entryNmb
@@ -475,7 +501,6 @@ class timeTrackingApp(App):
 	storeData = JsonStore("data.json")
 
 	def build(self):
-		
 		self.screen = Factory.AppScreens()
 		return self.screen
 
