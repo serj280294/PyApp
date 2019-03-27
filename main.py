@@ -465,13 +465,12 @@ class MainScreen(Screen):
 		self.ids.time.text, self.ids.date.text = timeAndDate
 
 	def pressed(self, stateText):
-		lastEntryNumber = self.getLastEntryNumber()
-		nextNumber = lastEntryNumber+1
+		entryData = {'type':'entry'}
 
-		state = stateText
-		time, date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
+		entryData['state'] = stateText
+		entryData['time'], entryData['date'] = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
 
-		self.store.put(str(nextNumber), date=date, time=time, state=state)
+		timeTrackingApp.addStorageEntry(timeTrackingApp, entryData)
 		
 		self.updateLastState()
 
@@ -480,7 +479,7 @@ class MainScreen(Screen):
 			self.ids.lastStateLabel.text = self.getLastState()
 
 	def getLastState(self):
-		lastEntryNumber = self.getLastEntryNumber()
+		lastEntryNumber = timeTrackingApp.getLastEntryNumber(timeTrackingApp)
 
 		if lastEntryNumber == 0:
 			return "No states in database"
@@ -490,12 +489,6 @@ class MainScreen(Screen):
 		else:
 			return "Last state today: not exist"
 
-	def getLastEntryNumber(self):
-		if (self.store):
-			return max([int(number) for number in self.store.keys()])
-		else:
-			return 0
-
 class timeTrackingApp(App):
 	
 	storeData = JsonStore("data.json")
@@ -503,6 +496,18 @@ class timeTrackingApp(App):
 	def build(self):
 		self.screen = Factory.AppScreens()
 		return self.screen
+
+	def addStorageEntry(self, dataForSave):
+		lastEntryNumber = self.getLastEntryNumber(self)
+		nextNumber = lastEntryNumber+1
+
+		self.storeData.put(str(nextNumber), **dataForSave)
+
+	def getLastEntryNumber(self):
+		if (self.storeData):
+			return max([int(number) for number in self.storeData.keys()])
+		else:
+			return 0
 
 	def deleteEntry(self, entryNmb):
 		self.storeData.delete(entryNmb)
