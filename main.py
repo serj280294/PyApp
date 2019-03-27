@@ -300,11 +300,13 @@ Builder.load_string('''
 				text: "Task name:"
 
 			TextInput:
+				id: taskName
 				size_hint_x: .7
 				multiline: False
 				padding_y: self.height / 2 - self.line_height / 2
 
 		BoxLayout:
+			id: selectWeekdays
 			orientation: 'horizontal'
 			size_hint_y: None
 			height: dp(50)
@@ -333,6 +335,7 @@ Builder.load_string('''
 				text: "Task time"
 
 			TextInput:
+				id: taskTime
 				size_hint_y: None
 				height: dp(50)
 				multiline: False
@@ -345,10 +348,55 @@ Builder.load_string('''
 			#size_hint_y: None
 			#height: dp(50)
 			#text: "New task screen"
+
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Save task"
+			on_press: root.saveTask()
 ''')
 
 class NewTaskScreen(Screen):
-	pass
+	def saveTask(self):
+		taskFormError = 0
+
+		taskForm = {'type':'task'}
+
+		taskForm['name'] = self.ids.taskName.text
+		if not taskForm['name']:
+			taskFormError = 1
+			#self.ids.taskNameLabel.
+			print("Empty task name")
+
+		taskForm['weekdays'] = self.getSelectedWeekdays()
+		if not taskForm['weekdays']:
+			taskFormError = 1
+			print("Weekdays not selected")
+
+		taskForm['taskTime'] = self.ids.taskTime.text
+		if not taskForm['taskTime']:
+			taskFormError = 1
+			print("Empty task time")
+
+		if taskFormError:
+			return
+
+		timeTrackingApp.addStorageEntry(timeTrackingApp, taskForm)
+
+		self.ids.taskName.text = ""
+		for button in self.ids.selectWeekdays.children:
+			button.state = 'normal'
+		self.ids.taskTime.text = ""
+
+	def getSelectedWeekdays(self):
+		weekdaysNumbers = []
+
+		selectButtons = {"MON": 1, "TUE": 2, "WEN": 3, "THU": 4, "FRI": 5, "SAT": 6, "SUN": 7}
+		for button in self.ids.selectWeekdays.children:
+			if button.state == 'down':
+				weekdaysNumbers.append(selectButtons[button.text])
+
+		return weekdaysNumbers
 
 class DateSelectItem(Button):
 	pass
