@@ -411,9 +411,11 @@ class DateSelectScreen(Screen):
 
 	def updateDatesList(self):
 		#self.ids.dateSelectList.data = []
-
 		entrysDates = []
-		for key in self.store:
+
+		entrysKeys = [key for key in self.store.keys() if self.store.get(key)['type'] == 'entry']
+
+		for key in entrysKeys:
 			date = self.store.get(key)['date']
 			if date not in entrysDates:
 				entrysDates.append(date)
@@ -439,9 +441,8 @@ class EditStatePopup(Popup):
 		entryData = self.store.get(self.editEntryNumber)
 
 		if self.ids['stateTime'].text != entryData['time']:
-			self.store.put(self.editEntryNumber, state = entryData['state'],
-												 date = entryData['date'],
-												 time = self.ids['stateTime'].text)
+			entryData['time'] = self.ids['stateTime'].text
+			self.store.put(self.editEntryNumber, **entryData)
 
 class StateElem(BoxLayout):
 	def editState(self, entryNmb):
@@ -474,13 +475,15 @@ class ViewScreen(Screen):
 	def updateStatesList(self):
 		self.ids.rv.data = []
 
-		if not self.store:
+		entrysNumbers = [number for number in self.store.keys() if self.store.get(number)['type'] == 'entry']
+
+		if not entrysNumbers:
 			self.ids.rv.data = [{"viewclass": "Label", "text": "No marks for all time."}]
 			self.ids.selectDateBtn.disabled = True
 		else:
 			self.ids.selectDateBtn.disabled = False
 			
-			for entryNmb in self.store:
+			for entryNmb in entrysNumbers:
 				entry = self.store.get(entryNmb)
 				
 				if entry['date'] == self.currentDate:
@@ -527,7 +530,7 @@ class MainScreen(Screen):
 			self.ids.lastStateLabel.text = self.getLastState()
 
 	def getLastState(self):
-		lastEntryNumber = timeTrackingApp.getLastEntryNumber(timeTrackingApp)
+		lastEntryNumber = self.getLastEntryNumber()
 
 		if lastEntryNumber == 0:
 			return "No states in database"
@@ -536,6 +539,13 @@ class MainScreen(Screen):
 			return "Last state today: " + self.store.get(str(lastEntryNumber))['state']
 		else:
 			return "Last state today: not exist"
+	
+	def getLastEntryNumber(self):
+		entrysKeys = [int(number) for number in self.store.keys() if self.store.get(number)['type'] == 'entry']
+		if (entrysKeys):
+			return max(entrysKeys)
+		else:
+			return 0
 
 class timeTrackingApp(App):
 	
