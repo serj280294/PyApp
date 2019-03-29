@@ -100,32 +100,21 @@ Builder.load_string('''
 				font_size: sp(18)
 				text: root.getLastState()
 			
-		BoxLayout:
-			orientation: 'vertical'
-				
-			Button:
-				text: "Awoke"
-				on_release: root.pressed(self.text)
-		
-			Button:
-				text: "Go to work"
-				on_release: root.pressed(self.text)
-	
-			Button:
-				text: "At work"
-				on_release: root.pressed(self.text)
+		RecycleView:
+			id: mainrv
+			key_viewclass: 'viewclass'
+			data: root.getRecycleDataTasks()
 
-			Button:
-				text: "Go home"
-				on_release: root.pressed(self.text)
+			RecycleBoxLayout:
+				default_size: None, dp(50)
+				default_size_hint: 1, None
+				size_hint_y: None
+				height: self.minimum_height
+				orientation: 'vertical'
 
-			Button:
-				text: "At home"
-				on_release: root.pressed(self.text)
-
-			Button:
-				text: "Sleep"
-				on_release: root.pressed(self.text)
+<TaskElem>:
+	taskKeyNumber: ""
+	on_release: app.screen.get_screen("mainScr").pressed(self.taskKeyNumber)
 
 <ViewScreen>:
 	name: "viewScr"
@@ -494,6 +483,9 @@ class ViewScreen(Screen):
 			if not self.ids.rv.data:	
 				self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
 
+class TaskElem(Button):
+	pass
+
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
 		super(MainScreen, self).__init__(**kwargs)
@@ -502,6 +494,7 @@ class MainScreen(Screen):
 
 	def on_enter(self):
 		self.updateLastState()
+		self.updateTasksList()
 
 	def getTimeDate(self, labelName=None):
 		if labelName == "time":
@@ -515,10 +508,10 @@ class MainScreen(Screen):
 		timeAndDate = self.getTimeDate()
 		self.ids.time.text, self.ids.date.text = timeAndDate
 
-	def pressed(self, stateText):
+	def pressed(self, taskNumber):
 		entryData = {'type':'entry'}
 
-		entryData['state'] = stateText
+		entryData['state'] = self.store.get(taskNumber)['name']
 		entryData['time'], entryData['date'] = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y").split(" ")
 
 		timeTrackingApp.addStorageEntry(timeTrackingApp, entryData)
@@ -546,6 +539,30 @@ class MainScreen(Screen):
 			return max(entrysKeys)
 		else:
 			return 0
+
+	def updateTasksList(self):
+		if self.ids:
+			self.ids.mainrv.data = self.getRecycleDataTasks()
+
+	def getRecycleDataTasks(self):
+		recycleData = []
+
+		tasksNumbers = [number for number in self.store.keys() if self.store.get(number)['type'] == 'task']
+
+		if not tasksNumbers:
+			recycleData = [{"viewclass": "Label", "text": "No tasks for all time."}]
+		else:
+			for taskNumber in tasksNumbers:
+				currentTask = self.store.get(taskNumber)
+				if datetime.datetime.today().isoweekday() in currentTask['weekdays']:
+					taskString = "{} ({})".format(currentTask['name'], currentTask['taskTime'])
+					taskData = {"viewclass": "TaskElem", "text": taskString, "taskKeyNumber": taskNumber}
+					recycleData.append(taskData)
+
+			if not recycleData:	
+				recycleData = [{"viewclass": "Label", "text": "Not tasks for today"}]
+
+		return recycleData
 
 class timeTrackingApp(App):
 	
