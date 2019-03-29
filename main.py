@@ -186,6 +186,7 @@ Builder.load_string('''
 
 			TextInput:
 				id: taskName
+				multiline: False
 				disabled: True
 
 		BoxLayout:
@@ -198,6 +199,7 @@ Builder.load_string('''
 
 			TextInput:
 				id: stateDate
+				multiline: False
 				disabled: True
 
 		BoxLayout:
@@ -210,6 +212,7 @@ Builder.load_string('''
 
 			TextInput:
 				id: stateTime
+				multiline: False
 
 		Label:
 
@@ -284,15 +287,39 @@ Builder.load_string('''
 			orientation: 'horizontal'
 			size_hint_y: None
 			height: dp(30)
+			padding: dp(20), 0, dp(10), 0
+			
 			Label:
-				size_hint_x: .3
+				size_hint_x: .4
+				text_size: self.size
+				halign: 'left'
+				valign: 'center'
 				text: "Task name:"
 
 			TextInput:
 				id: taskName
-				size_hint_x: .7
+				size_hint_x: .6
 				multiline: False
 				padding_y: self.height / 2 - self.line_height / 2
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(40)
+			padding: dp(20), 0, dp(10), 0
+
+			Label:
+				size_hint_x: .4
+				text_size: self.size
+				halign: 'left'
+				valign: 'center'
+				text: "Task priority:"
+
+			Spinner:
+				size_hint_x: .6
+				sync_height: True
+				values: "Normal", "High"
+				text: "Normal"
 
 		BoxLayout:
 			id: selectWeekdays
