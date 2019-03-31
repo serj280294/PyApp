@@ -316,6 +316,7 @@ Builder.load_string('''
 				text: "Task priority:"
 
 			Spinner:
+				id: prioritySpinner
 				size_hint_x: .6
 				sync_height: True
 				values: "Normal", "High"
@@ -358,7 +359,24 @@ Builder.load_string('''
 				padding_y: self.height / 2 - self.line_height / 2
 				font_size: sp(30)
 				padding_x: self.center[0] - self._get_text_width(self.text, self.tab_width, self._label_cached) / 2
-				
+		
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint_y: None
+			height: dp(80)
+			
+			Label:
+				text: "Task duration (minutes)"
+
+			TextInput:
+				id: taskDuration
+				size_hint_y: None
+				height: dp(50)
+				multiline: False
+				padding_y: self.height / 2 - self.line_height / 2
+				font_size: sp(30)
+				padding_x: self.center[0] - self._get_text_width(self.text, self.tab_width, self._label_cached) / 2
+
 		Label:
 			font_size: sp(30)
 			#size_hint_y: None
@@ -384,6 +402,8 @@ class NewTaskScreen(Screen):
 			#self.ids.taskNameLabel.
 			print("Empty task name")
 
+		taskForm['priority'] = self.getSelectedPriority()
+
 		taskForm['weekdays'] = self.getSelectedWeekdays()
 		if not taskForm['weekdays']:
 			taskFormError = 1
@@ -394,6 +414,11 @@ class NewTaskScreen(Screen):
 			taskFormError = 1
 			print("Empty task time")
 
+		taskForm['taskDuration'] = self.ids.taskDuration.text
+		if not taskForm['taskDuration']:
+			taskFormError = 1
+			print("Empty task duration")
+
 		if taskFormError:
 			return
 
@@ -403,6 +428,11 @@ class NewTaskScreen(Screen):
 		for button in self.ids.selectWeekdays.children:
 			button.state = 'normal'
 		self.ids.taskTime.text = ""
+		self.ids.taskDuration.text = ""
+
+	def getSelectedPriority(self):
+		priorityRanks = {"Normal": 0, "High": 1}
+		return priorityRanks[self.ids.prioritySpinner.text]
 
 	def getSelectedWeekdays(self):
 		weekdaysNumbers = []
