@@ -416,4 +416,48 @@
 
 		Label:
 			font_size: sp(30)
+			size_hint_y: None
+			height: dp(50)
 			text: "All tasks"
+
+		RecycleView:
+			id: allTasksRv
+			key_viewclass: 'viewclass'
+			#data: root.getRecycleDataTasks()
+
+			RecycleBoxLayout:
+				default_size: None, dp(100)
+				default_size_hint: 1, None
+				size_hint_y: None
+				height: self.minimum_height
+				orientation: 'vertical'
+
+<ViewTasksElem>:
+	orientation: 'horizontal'
+	padding: dp(10), 0
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		Label:
+			text_size: self.size
+			halign: 'left'
+			valign: 'center'
+			font_size: sp(24)
+			text: 'Sleep prepare'
+
+		Label:
+			text_size: self.size
+			halign: 'left'
+			valign: 'center'
+			font_size: sp(30)
+			text: '23:00:00'
+
+		Label:
+			text_size: self.size
+			halign: 'left'
+			valign: 'center'
+			text: 'Duration: 120 minutes'
+
+	Button:
+		text: "More"

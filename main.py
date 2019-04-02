@@ -25,8 +25,15 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.properties import StringProperty
 
-class ViewAllTasksScreen(Screen):
+class ViewTasksElem(BoxLayout):
 	pass
+
+class ViewAllTasksScreen(Screen):
+	def on_enter(self):
+		self.updateTasksList()
+
+	def updateTasksList(self):
+		self.ids.allTasksRv.data = [{'viewclass':'ViewTasksElem'} for i in range(10)]
 
 class NewTaskScreen(Screen):
 	def saveTask(self):
