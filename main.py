@@ -26,14 +26,36 @@ from kivy.uix.popup import Popup
 from kivy.properties import StringProperty
 
 class ViewTasksElem(BoxLayout):
-	pass
+	taskName = StringProperty()
+	taskTime = StringProperty()
+	taskDuration = StringProperty()
+	taskNumber = StringProperty()
 
 class ViewAllTasksScreen(Screen):
 	def on_enter(self):
 		self.updateTasksList()
 
 	def updateTasksList(self):
-		self.ids.allTasksRv.data = [{'viewclass':'ViewTasksElem'} for i in range(10)]
+		self.ids.allTasksRv.data = self.getRecycleDataTasks()
+
+	def getRecycleDataTasks(self):
+		recycleData = []
+
+		tasksData = timeTrackingApp.getDataEntries(timeTrackingApp, dataEntriesType='task')
+
+		for taskKey in tasksData.keys():
+			task = tasksData[taskKey]
+			taskRvData = {"viewclass"	 : "ViewTasksElem",
+						  "taskName"	 : task['name'],
+						  "taskTime"	 : task['taskTime'],
+						  "taskDuration" : task['taskDuration'],
+						  "taskNumber"	 : taskKey}
+			recycleData.append(taskRvData)
+
+		if not recycleData:	
+			recycleData = [{"viewclass": "Label", "text": "Not tasks"}]
+
+		return recycleData
 
 class NewTaskScreen(Screen):
 	def saveTask(self):
@@ -294,6 +316,10 @@ class timeTrackingApp(App):
 
 	def deleteEntry(self, entryNmb):
 		self.storeData.delete(entryNmb)
+
+	def getDataEntries(self, dataEntriesType):
+		dataEntriesKeys = [number for number in self.storeData.keys() if self.storeData.get(number)['type'] == dataEntriesType]
+		return {key: self.storeData.get(key) for key in dataEntriesKeys}
 
 if __name__ == "__main__":
     timeTrackingApp().run()
