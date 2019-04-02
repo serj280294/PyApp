@@ -37,6 +37,8 @@ Builder.load_string('''
 		id: dateSelectScr
 	NewTaskScreen:
 		id: newTaskScr
+	ViewAllTasksScreen:
+		id: viewAllTasksScr
 
 <MainScreen>:
 	name: "mainScr"
@@ -82,22 +84,12 @@ Builder.load_string('''
 			orientation: 'horizontal'
 			size_hint_y: None
 			height: dp(50)
-			spacing: dp(20)
-			
-			Button:
-				size_hint_x: None
-				width: dp(50)
-				font_size: sp(30)
-				text: "+"
-				on_release: 
-					app.screen.transition.direction = 'right'; \
-					app.screen.current = "newTaskScr"
 			
 			Label:
 				id: lastStateLabel
-				text_size: self.size
-				halign: 'left'
-    			valign: 'center'
+				#text_size: self.size
+				#halign: 'left'
+    			#valign: 'center'
 				font_size: sp(18)
 				text: root.getLastState()
 			
@@ -112,6 +104,14 @@ Builder.load_string('''
 				size_hint_y: None
 				height: self.minimum_height
 				orientation: 'vertical'
+
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "Add task"
+			on_release: 
+				app.screen.transition.direction = 'right'; \
+				app.screen.current = "newTaskScr"
 
 <TaskElem>:
 	orientation: 'horizontal'
@@ -412,12 +412,41 @@ Builder.load_string('''
 			#height: dp(50)
 			#text: "New task screen"
 
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(50)
+
+			Button:
+				text: "Save task"
+				on_release: root.saveTask()
+
+			Button:
+				text: "All tasks"
+				on_release: app.screen.transition.direction = 'right'; \
+							app.screen.current = "viewAllTasksScr"
+
+<ViewAllTasksScreen>:
+	name: "viewAllTasksScr"
+
+	BoxLayout:
+		orientation: 'vertical'
 		Button:
 			size_hint_y: None
 			height: dp(50)
-			text: "Save task"
-			on_press: root.saveTask()
+			text: "Back"
+			on_release:
+				app.screen.transition.direction = 'left'; \
+				app.screen.current = "newTaskScr"
+
+		Label:
+			font_size: sp(30)
+			text: "All tasks"
+
 ''')
+
+class ViewAllTasksScreen(Screen):
+	pass
 
 class NewTaskScreen(Screen):
 	def saveTask(self):
