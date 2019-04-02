@@ -23,6 +23,7 @@ from kivy.factory import Factory
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
+from kivy.properties import StringProperty
 
 Builder.load_string('''
 #:kivy 1.10.1
@@ -106,15 +107,43 @@ Builder.load_string('''
 			data: root.getRecycleDataTasks()
 
 			RecycleBoxLayout:
-				default_size: None, dp(50)
+				default_size: None, dp(80)
 				default_size_hint: 1, None
 				size_hint_y: None
 				height: self.minimum_height
 				orientation: 'vertical'
 
 <TaskElem>:
-	taskKeyNumber: ""
-	on_release: app.screen.get_screen("mainScr").pressed(self.taskKeyNumber)
+	orientation: 'horizontal'
+	padding: dp(10)
+	spacing: dp(10)
+	
+	Button:
+		size_hint_x: None
+		width: dp(50)
+		text: "Info"
+		on_release: print("Info", root.taskNumber)
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		Label:
+			text_size: self.size
+			halign: 'left'
+			valign: 'center'
+			text: "{} - {}".format(root.taskName, root.taskTime)
+		
+		Label:
+			text_size: self.size
+			halign: 'left'
+			valign: 'center'
+			text: "Duration: {} minutes".format(root.taskDuration)
+	
+	Button:
+		size_hint_x: None
+		width: dp(100)
+		text: "Mark"
+		on_release: app.screen.get_screen("mainScr").pressed(root.taskNumber)
 
 <ViewScreen>:
 	name: "viewScr"
@@ -540,8 +569,11 @@ class ViewScreen(Screen):
 			if not self.ids.rv.data:	
 				self.ids.rv.data = [{"viewclass": "Label", "text": "No marks on this day"}]
 
-class TaskElem(Button):
-	pass
+class TaskElem(BoxLayout):
+	taskName = StringProperty()
+	taskTime = StringProperty()
+	taskDuration = StringProperty()
+	taskNumber = StringProperty()
 
 class MainScreen(Screen):
 	def __init__(self, **kwargs):
@@ -612,8 +644,11 @@ class MainScreen(Screen):
 			for taskNumber in tasksNumbers:
 				currentTask = self.store.get(taskNumber)
 				if datetime.datetime.today().isoweekday() in currentTask['weekdays']:
-					taskString = "{} ({})".format(currentTask['name'], currentTask['taskTime'])
-					taskData = {"viewclass": "TaskElem", "text": taskString, "taskKeyNumber": taskNumber}
+					taskData = {"viewclass"		: "TaskElem",
+								"taskName"		: currentTask['name'],
+								"taskTime"		: currentTask['taskTime'], 
+								"taskDuration" 	: currentTask['taskDuration'],
+								"taskNumber"	: taskNumber}
 					recycleData.append(taskData)
 
 			if not recycleData:	
