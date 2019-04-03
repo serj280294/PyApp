@@ -7,8 +7,8 @@
 		id: viewScr
 	DateSelectScreen:
 		id: dateSelectScr
-	NewTaskScreen:
-		id: newTaskScr
+	ViewTaskScreen:
+		id: viewTaskScr
 	ViewAllTasksScreen:
 		id: viewAllTasksScr
 
@@ -80,10 +80,10 @@
 		Button:
 			size_hint_y: None
 			height: dp(50)
-			text: "Add task"
+			text: "All tasks"
 			on_release: 
 				app.screen.transition.direction = 'right'; \
-				app.screen.current = "newTaskScr"
+				app.screen.current = "viewAllTasksScr"
 
 <TaskElem>:
 	orientation: 'horizontal'
@@ -271,8 +271,8 @@
 		app.screen.transition.direction = 'right'; \
 		app.screen.current = "viewScr"
 
-<NewTaskScreen>:
-	name: "newTaskScr"
+<ViewTaskScreen>:
+	name: "viewTaskScr"
 
 	BoxLayout:
 		orientation: 'vertical'
@@ -284,7 +284,7 @@
 			text: "Back"
 			on_release:
 				app.screen.transition.direction = 'left'; \
-				app.screen.current = "mainScr"
+				app.screen.current = "viewAllTasksScr"
 
 		BoxLayout:
 			orientation: 'horizontal'
@@ -395,12 +395,6 @@
 				text: "Save task"
 				on_release: root.saveTask()
 
-			Button:
-				text: "All tasks"
-				on_release:
-					app.screen.transition.direction = 'right'; \
-					app.screen.current = "viewAllTasksScr"
-
 <ViewAllTasksScreen>:
 	name: "viewAllTasksScr"
 
@@ -412,7 +406,7 @@
 			text: "Back"
 			on_release:
 				app.screen.transition.direction = 'left'; \
-				app.screen.current = "newTaskScr"
+				app.screen.current = "mainScr"
 
 		Label:
 			font_size: sp(30)
@@ -431,6 +425,14 @@
 				size_hint_y: None
 				height: self.minimum_height
 				orientation: 'vertical'
+
+		Button:
+			size_hint_y: None
+			height: dp(50)
+			text: "New task"
+			on_release:
+				app.screen.transition.direction = 'right'; \
+				app.screen.current = "viewTaskScr"
 
 <ViewTasksElem>:
 	orientation: 'horizontal'

@@ -57,7 +57,7 @@ class ViewAllTasksScreen(Screen):
 
 		return recycleData
 
-class NewTaskScreen(Screen):
+class ViewTaskScreen(Screen):
 	def saveTask(self):
 		taskFormError = 0
 
