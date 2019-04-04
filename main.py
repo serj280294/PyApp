@@ -58,6 +58,10 @@ class ViewAllTasksScreen(Screen):
 		return recycleData
 
 class ViewTaskScreen(Screen):
+
+	taskNumber = StringProperty()
+	previousScreen = StringProperty()
+
 	def saveTask(self):
 		taskFormError = 0
 

@@ -94,7 +94,11 @@
 		size_hint_x: None
 		width: dp(50)
 		text: "Info"
-		on_release: print("Info", root.taskNumber)
+		on_release:
+			app.screen.transition.direction = 'right'; \
+			app.screen.get_screen('viewTaskScr').taskNumber = root.taskNumber ; \
+			app.screen.get_screen('viewTaskScr').previousScreen = "mainScr" ; \
+			app.screen.current = "viewTaskScr"
 
 	BoxLayout:
 		orientation: 'vertical'
@@ -284,7 +288,7 @@
 			text: "Back"
 			on_release:
 				app.screen.transition.direction = 'left'; \
-				app.screen.current = "viewAllTasksScr"
+				app.screen.current = root.previousScreen
 
 		BoxLayout:
 			orientation: 'horizontal'
@@ -432,6 +436,8 @@
 			text: "New task"
 			on_release:
 				app.screen.transition.direction = 'right'; \
+				app.screen.get_screen('viewTaskScr').taskNumber = '0' ; \
+				app.screen.get_screen('viewTaskScr').previousScreen = "viewAllTasksScr" ; \
 				app.screen.current = "viewTaskScr"
 
 <ViewTasksElem>:
@@ -471,4 +477,8 @@
 			size_hint_y: None
 			height: dp(50)
 			text: "More"
-			on_release: print("Info", root.taskNumber)
+			on_release:
+				app.screen.transition.direction = 'right'; \
+				app.screen.get_screen('viewTaskScr').taskNumber = root.taskNumber ; \
+				app.screen.get_screen('viewTaskScr').previousScreen = "viewAllTasksScr" ; \
+				app.screen.current = "viewTaskScr"
