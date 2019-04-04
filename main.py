@@ -68,6 +68,7 @@ class ViewTaskScreen(Screen):
 
 			self.ids.taskName.text = taskData['name']
 			self.ids.prioritySpinner.text = self.getPriorityText(taskData['priority'])
+			self.showSelectedkWeekdays(taskData['weekdays'])
 			self.ids.taskTime.text = taskData['taskTime']
 			self.ids.taskDuration.text = taskData['taskDuration']
 			
@@ -124,15 +125,21 @@ class ViewTaskScreen(Screen):
 	def getPriorityText(self, priorityRank = 0):
 		return self.priorityRanks[priorityRank]
 
+	selectButtons = ["MON", "TUE", "WEN", "THU", "FRI", "SAT", "SUN"]
+
 	def getSelectedWeekdays(self):
 		weekdaysNumbers = []
-
-		selectButtons = {"MON": 1, "TUE": 2, "WEN": 3, "THU": 4, "FRI": 5, "SAT": 6, "SUN": 7}
 		for button in self.ids.selectWeekdays.children:
 			if button.state == 'down':
-				weekdaysNumbers.append(selectButtons[button.text])
+				weekdaysNumbers.append(self.selectButtons.index(button.text))
 
 		return weekdaysNumbers
+
+	def showSelectedkWeekdays(self, weekdays):
+		buttonsDays = [self.selectButtons[day] for day in weekdays]
+		for button in self.ids.selectWeekdays.children:
+			if button.text in buttonsDays:
+				button.state = 'down'
 
 	def eraseTaskForm(self):
 		self.ids.taskName.text = ""
@@ -312,7 +319,7 @@ class MainScreen(Screen):
 		else:
 			for taskNumber in tasksNumbers:
 				currentTask = self.store.get(taskNumber)
-				if datetime.datetime.today().isoweekday() in currentTask['weekdays']:
+				if datetime.datetime.today().weekday() in currentTask['weekdays']:
 					taskData = {"viewclass"		: "TaskElem",
 								"taskName"		: currentTask['name'],
 								"taskTime"		: currentTask['taskTime'], 
