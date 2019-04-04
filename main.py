@@ -62,6 +62,20 @@ class ViewTaskScreen(Screen):
 	taskNumber = StringProperty()
 	previousScreen = StringProperty()
 
+	def on_enter(self):
+		if self.taskNumber != "0":
+			taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
+
+			self.ids.taskName.text = taskData['name']
+			self.ids.prioritySpinner.text = self.getPriorityText(taskData['priority'])
+			self.ids.taskTime.text = taskData['taskTime']
+			self.ids.taskDuration.text = taskData['taskDuration']
+			
+			self.ids.delTaskBtn.disabled = False
+		else:
+			self.eraseTaskForm()
+			self.ids.delTaskBtn.disabled = True
+
 	def saveTask(self):
 		taskFormError = 0
 
@@ -95,15 +109,20 @@ class ViewTaskScreen(Screen):
 
 		timeTrackingApp.addStorageEntry(timeTrackingApp, taskForm)
 
-		self.ids.taskName.text = ""
-		for button in self.ids.selectWeekdays.children:
-			button.state = 'normal'
-		self.ids.taskTime.text = ""
-		self.ids.taskDuration.text = ""
+		self.eraseTaskForm()
+
+	def deleteTask(self):
+		taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
+		taskData['type'] = 'deleted'
+		timeTrackingApp.saveStorageEntry(timeTrackingApp, self.taskNumber, taskData)
+
+	priorityRanks = ["Normal", "High"]
 
 	def getSelectedPriority(self):
-		priorityRanks = {"Normal": 0, "High": 1}
-		return priorityRanks[self.ids.prioritySpinner.text]
+		return self.priorityRanks.index(self.ids.prioritySpinner.text)
+
+	def getPriorityText(self, priorityRank = 0):
+		return self.priorityRanks[priorityRank]
 
 	def getSelectedWeekdays(self):
 		weekdaysNumbers = []
@@ -114,6 +133,14 @@ class ViewTaskScreen(Screen):
 				weekdaysNumbers.append(selectButtons[button.text])
 
 		return weekdaysNumbers
+
+	def eraseTaskForm(self):
+		self.ids.taskName.text = ""
+		self.ids.prioritySpinner.text = self.getPriorityText()
+		for button in self.ids.selectWeekdays.children:
+			button.state = 'normal'
+		self.ids.taskTime.text = ""
+		self.ids.taskDuration.text = ""
 
 class DateSelectItem(Button):
 	pass
@@ -311,6 +338,12 @@ class timeTrackingApp(App):
 		nextNumber = lastEntryNumber+1
 
 		self.storeData.put(str(nextNumber), **dataForSave)
+
+	def saveStorageEntry(self, entryNumber, dataForSave):
+		self.storeData.put(str(entryNumber), **dataForSave)
+
+	def getStorageEntry(self, entryNumber):
+		return self.storeData.get(entryNumber)
 
 	def getLastEntryNumber(self):
 		if (self.storeData):
