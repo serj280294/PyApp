@@ -78,39 +78,48 @@ class ViewTaskScreen(Screen):
 			self.ids.delTaskBtn.disabled = True
 
 	def saveTask(self):
-		taskFormError = 0
+		taskForm = self.getTaskForm()
+		if taskForm:
+			timeTrackingApp.addStorageEntry(timeTrackingApp, taskForm)
+			self.eraseTaskForm()
 
+	def getTaskForm(self):
 		taskForm = {'type':'task'}
 
-		taskForm['name'] = self.ids.taskName.text
-		if not taskForm['name']:
-			taskFormError = 1
-			#self.ids.taskNameLabel.
-			print("Empty task name")
+		if self.ids.taskName.text:
+			taskForm['name'] = self.ids.taskName.text
+			self.ids.taskNameLabel.color = (1, 1, 1, 1)
+		else:
+			taskForm['name'] = None
+			self.ids.taskNameLabel.color = (1, 0, 0, 1)
 
 		taskForm['priority'] = self.getSelectedPriority()
 
-		taskForm['weekdays'] = self.getSelectedWeekdays()
-		if not taskForm['weekdays']:
-			taskFormError = 1
-			print("Weekdays not selected")
+		if self.getSelectedWeekdays():
+			taskForm['weekdays'] = self.getSelectedWeekdays()
+			self.errorSelectedWeekdays(clear=True)
+		else:
+			taskForm['weekdays'] = None
+			self.errorSelectedWeekdays()
+		
+		if self.ids.taskTime.text:
+			taskForm['taskTime'] = self.ids.taskTime.text
+			self.ids.taskTimeLabel.color = (1, 1, 1, 1)
+		else:
+			taskForm['taskTime'] = None
+			self.ids.taskTimeLabel.color = (1, 0, 0, 1)
+		
+		if self.ids.taskDuration.text:
+			taskForm['taskDuration'] = self.ids.taskDuration.text
+			self.ids.taskDurationLabel.color = (1, 1, 1, 1)
+		else:
+			taskForm['taskDuration'] = None
+			self.ids.taskDurationLabel.color = (1, 0, 0, 1)
 
-		taskForm['taskTime'] = self.ids.taskTime.text
-		if not taskForm['taskTime']:
-			taskFormError = 1
-			print("Empty task time")
+		if [item for item in taskForm if taskForm[item] == None]:
+			taskForm = {}
 
-		taskForm['taskDuration'] = self.ids.taskDuration.text
-		if not taskForm['taskDuration']:
-			taskFormError = 1
-			print("Empty task duration")
-
-		if taskFormError:
-			return
-
-		timeTrackingApp.addStorageEntry(timeTrackingApp, taskForm)
-
-		self.eraseTaskForm()
+		return taskForm
 
 	def deleteTask(self):
 		taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
@@ -140,6 +149,12 @@ class ViewTaskScreen(Screen):
 		for button in self.ids.selectWeekdays.children:
 			if button.text in buttonsDays:
 				button.state = 'down'
+
+	def errorSelectedWeekdays(self, clear=False):
+		textColor = (1, 1, 1, 1) if clear else (1, 0, 0, 1)
+
+		for button in self.ids.selectWeekdays.children:
+			button.color = textColor
 
 	def eraseTaskForm(self):
 		self.ids.taskName.text = ""

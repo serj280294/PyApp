@@ -297,6 +297,7 @@
 			padding: dp(20), 0, dp(10), 0
 			
 			Label:
+				id: taskNameLabel
 				size_hint_x: .4
 				text_size: self.size
 				halign: 'left'
@@ -356,6 +357,7 @@
 			height: dp(80)
 			
 			Label:
+				id: taskTimeLabel
 				text: "Task time"
 
 			TextInput:
@@ -373,6 +375,7 @@
 			height: dp(80)
 			
 			Label:
+				id: taskDurationLabel
 				text: "Task duration (minutes)"
 
 			TextInput:
@@ -402,7 +405,10 @@
 			Button:
 				id: delTaskBtn
 				text: "Delete task"
-				on_release: root.deleteTask()
+				on_release: 
+					root.deleteTask(); \
+					app.screen.transition.direction = 'left'; \
+					app.screen.current = root.previousScreen
 
 <ViewAllTasksScreen>:
 	name: "viewAllTasksScr"
