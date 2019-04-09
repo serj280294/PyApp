@@ -72,10 +72,17 @@ class ViewTaskScreen(Screen):
 			self.ids.taskTime.text = taskData['taskTime']
 			self.ids.taskDuration.text = taskData['taskDuration']
 			
-			self.ids.delTaskBtn.disabled = False
+			self.ids.taskActionBtn.text = "Delete task"
 		else:
 			self.eraseTaskForm()
-			self.ids.delTaskBtn.disabled = True
+			self.ids.taskActionBtn.text = "Save task"
+
+	def taskAction(self):
+		if self.taskNumber != "0":
+			self.deleteTask()
+			self.eraseTaskForm()
+		else:
+			self.saveTask()
 
 	def saveTask(self):
 		taskForm = self.getTaskForm()

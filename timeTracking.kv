@@ -393,22 +393,12 @@
 			#height: dp(50)
 			#text: "New task screen"
 
-		BoxLayout:
-			orientation: 'horizontal'
+		Button:
+			id: taskActionBtn
 			size_hint_y: None
 			height: dp(50)
-
-			Button:
-				text: "Save task"
-				on_release: root.saveTask()
-
-			Button:
-				id: delTaskBtn
-				text: "Delete task"
-				on_release: 
-					root.deleteTask(); \
-					app.screen.transition.direction = 'left'; \
-					app.screen.current = root.previousScreen
+			text: "Save task"
+			on_release: root.taskAction()
 
 <ViewAllTasksScreen>:
 	name: "viewAllTasksScr"
