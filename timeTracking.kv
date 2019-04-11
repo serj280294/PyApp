@@ -286,9 +286,9 @@
 			size_hint_y: None
 			height: dp(50)
 			text: "Back"
-			on_release:
-				app.screen.transition.direction = 'left'; \
-				app.screen.current = root.previousScreen
+			on_release: root.checkTaskChanges()
+				#app.screen.transition.direction = 'left'; \
+				#app.screen.current = root.previousScreen
 
 		BoxLayout:
 			orientation: 'horizontal'
@@ -399,6 +399,32 @@
 			height: dp(50)
 			text: "Save task"
 			on_release: root.taskAction()
+
+<ChangedTaskPopup>:
+	title: "Task has been changed"
+
+	BoxLayout:
+		orientation: 'vertical'
+
+		Label:
+			size_hint_y: None
+			text_size: self.width, None
+			height: self.texture_size[1]
+			padding: dp(10), dp(10)
+			text: root.getChangesInfo()
+
+		BoxLayout:
+			orientation: 'horizontal'
+			size_hint_y: None
+			height: dp(50)
+
+			Button:
+				text: root.getActionButtonText()
+				on_release: root.dismiss()
+
+			Button:
+				text: "Cancel"
+				on_release: root.dismiss()
 
 <ViewAllTasksScreen>:
 	name: "viewAllTasksScr"

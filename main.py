@@ -23,7 +23,7 @@ from kivy.factory import Factory
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, BooleanProperty, DictProperty
 
 class ViewTasksElem(BoxLayout):
 	taskName = StringProperty()
@@ -57,20 +57,34 @@ class ViewAllTasksScreen(Screen):
 
 		return recycleData
 
+class ChangedTaskPopup(Popup):
+	
+	taskFormError = BooleanProperty()
+
+	def getChangesInfo(self):
+		infoString = "Save changes? This action will create a task with new parameters."
+		errorString = "Task has been changed with errors. Correct mistakes or cancel changes."
+		return errorString if self.taskFormError else infoString
+
+	def getActionButtonText(self):
+		return "To fix" if self.taskFormError else "Save"
+
 class ViewTaskScreen(Screen):
 
 	taskNumber = StringProperty()
 	previousScreen = StringProperty()
+	taskData = DictProperty()
+	taskForm = DictProperty()
 
 	def on_enter(self):
 		if self.taskNumber != "0":
-			taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
+			self.taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
 
-			self.ids.taskName.text = taskData['name']
-			self.ids.prioritySpinner.text = self.getPriorityText(taskData['priority'])
-			self.showSelectedkWeekdays(taskData['weekdays'])
-			self.ids.taskTime.text = taskData['taskTime']
-			self.ids.taskDuration.text = taskData['taskDuration']
+			self.ids.taskName.text = self.taskData['name']
+			self.ids.prioritySpinner.text = self.getPriorityText(self.taskData['priority'])
+			self.showSelectedkWeekdays(self.taskData['weekdays'])
+			self.ids.taskTime.text = self.taskData['taskTime']
+			self.ids.taskDuration.text = self.taskData['taskDuration']
 			
 			self.ids.taskActionBtn.text = "Delete task"
 		else:
@@ -85,53 +99,61 @@ class ViewTaskScreen(Screen):
 			self.saveTask()
 
 	def saveTask(self):
-		taskForm = self.getTaskForm()
-		if taskForm:
-			timeTrackingApp.addStorageEntry(timeTrackingApp, taskForm)
+		if self.checkTaskForm():
+			timeTrackingApp.addStorageEntry(timeTrackingApp, self.taskForm)
 			self.eraseTaskForm()
 
-	def getTaskForm(self):
-		taskForm = {'type':'task'}
+	colorRight = (1, 1, 1, 1)
+	colorWrong = (1, 0, 0, 1)
+
+	def checkTaskForm(self):
+		self.taskForm = {'type':'task'}
 
 		if self.ids.taskName.text:
-			taskForm['name'] = self.ids.taskName.text
-			self.ids.taskNameLabel.color = (1, 1, 1, 1)
+			self.taskForm['name'] = self.ids.taskName.text
+			self.ids.taskNameLabel.color = self.colorRight
 		else:
-			taskForm['name'] = None
-			self.ids.taskNameLabel.color = (1, 0, 0, 1)
+			self.taskForm['name'] = None
+			self.ids.taskNameLabel.color = self.colorWrong
 
-		taskForm['priority'] = self.getSelectedPriority()
+		self.taskForm['priority'] = self.getSelectedPriority()
 
 		if self.getSelectedWeekdays():
-			taskForm['weekdays'] = self.getSelectedWeekdays()
+			self.taskForm['weekdays'] = self.getSelectedWeekdays()
 			self.errorSelectedWeekdays(clear=True)
 		else:
-			taskForm['weekdays'] = None
+			self.taskForm['weekdays'] = None
 			self.errorSelectedWeekdays()
 		
 		if self.ids.taskTime.text:
-			taskForm['taskTime'] = self.ids.taskTime.text
-			self.ids.taskTimeLabel.color = (1, 1, 1, 1)
+			self.taskForm['taskTime'] = self.ids.taskTime.text
+			self.ids.taskTimeLabel.color = self.colorRight
 		else:
-			taskForm['taskTime'] = None
-			self.ids.taskTimeLabel.color = (1, 0, 0, 1)
+			self.taskForm['taskTime'] = None
+			self.ids.taskTimeLabel.color = self.colorWrong
 		
 		if self.ids.taskDuration.text:
-			taskForm['taskDuration'] = self.ids.taskDuration.text
-			self.ids.taskDurationLabel.color = (1, 1, 1, 1)
+			self.taskForm['taskDuration'] = self.ids.taskDuration.text
+			self.ids.taskDurationLabel.color = self.colorRight
 		else:
-			taskForm['taskDuration'] = None
-			self.ids.taskDurationLabel.color = (1, 0, 0, 1)
+			self.taskForm['taskDuration'] = None
+			self.ids.taskDurationLabel.color = self.colorWrong
 
-		if [item for item in taskForm if taskForm[item] == None]:
-			taskForm = {}
-
-		return taskForm
+		return True if not [item for item in self.taskForm if self.taskForm[item] == None] else False
 
 	def deleteTask(self):
-		taskData = timeTrackingApp.getStorageEntry(timeTrackingApp, self.taskNumber)
-		taskData['type'] = 'deleted'
-		timeTrackingApp.saveStorageEntry(timeTrackingApp, self.taskNumber, taskData)
+		self.taskData['type'] = 'deleted'
+		timeTrackingApp.saveStorageEntry(timeTrackingApp, self.taskNumber, self.taskData)
+
+	def checkTaskChanges(self):
+		if self.taskNumber != "0":
+			if self.checkTaskForm():
+				if self.taskForm != self.taskData:
+					ChangedTaskPopup.taskFormError = False
+					Factory.ChangedTaskPopup().open()
+			else:
+				ChangedTaskPopup.taskFormError = True
+				Factory.ChangedTaskPopup().open()
 
 	priorityRanks = ["Normal", "High"]
 
@@ -158,7 +180,7 @@ class ViewTaskScreen(Screen):
 				button.state = 'down'
 
 	def errorSelectedWeekdays(self, clear=False):
-		textColor = (1, 1, 1, 1) if clear else (1, 0, 0, 1)
+		textColor = self.colorRight if clear else self.colorWrong
 
 		for button in self.ids.selectWeekdays.children:
 			button.color = textColor
