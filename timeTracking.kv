@@ -420,11 +420,15 @@
 
 			Button:
 				text: root.getActionButtonText()
-				on_release: root.dismiss()
+				on_release:
+					app.screen.get_screen('viewTaskScr').choiceForChanges(choice="process")
+					root.dismiss()
 
 			Button:
 				text: "Cancel"
-				on_release: root.dismiss()
+				on_release: 
+					app.screen.get_screen('viewTaskScr').choiceForChanges(choice="exit")
+					root.dismiss()
 
 <ViewAllTasksScreen>:
 	name: "viewAllTasksScr"
