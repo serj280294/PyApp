@@ -144,21 +144,22 @@ class ViewTaskScreen(Screen):
 	def deleteTask(self):
 		self.taskData['type'] = 'deleted'
 		timeTrackingApp.saveStorageEntry(timeTrackingApp, self.taskNumber, self.taskData)
-		print("Just exit")
+		self.goBack()
 
 	def checkTaskChanges(self):
 		if self.taskNumber != "0":
 			if self.checkTaskForm():
-				if self.taskForm != self.taskData:
-					ChangedTaskPopup.taskFormError = False
-					Factory.ChangedTaskPopup().open()
+				if self.taskForm == self.taskData:
+					self.goBack()
+					return
 				else:
-					print("Just exit")
+					ChangedTaskPopup.taskFormError = False
 			else:
 				ChangedTaskPopup.taskFormError = True
-				Factory.ChangedTaskPopup().open()
+			
+			Factory.ChangedTaskPopup().open()
 		else:
-			print("Just exit")
+			self.goBack()
 
 	def choiceForChanges(self, choice):
 		if choice == 'process':
@@ -171,13 +172,17 @@ class ViewTaskScreen(Screen):
 		
 		self.clearAllWrongs()
 		self.eraseTaskForm()
-		print("Just exit")
+		self.goBack()
 
 	def clearAllWrongs(self):
 		self.ids.taskNameLabel.color = self.colorRight
 		self.errorSelectedWeekdays(clear=True)
 		self.ids.taskTimeLabel.color = self.colorRight
 		self.ids.taskDurationLabel.color = self.colorRight
+
+	def goBack(self):
+		self.manager.transition.direction = 'left'
+		self.manager.current = self.previousScreen
 
 	priorityRanks = ["Normal", "High"]
 
