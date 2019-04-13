@@ -401,17 +401,25 @@
 			on_release: root.taskAction()
 
 <ChangedTaskPopup>:
+	size_hint: None, None
+	width: dp(300)
+	height: dp(200)
+	auto_dismiss: False
 	title: "Task has been changed"
 
 	BoxLayout:
 		orientation: 'vertical'
 
-		Label:
-			size_hint_y: None
-			text_size: self.width, None
-			height: self.texture_size[1]
-			padding: dp(10), dp(10)
-			text: root.getChangesInfo()
+		AnchorLayout:
+			anchor_x: 'left'
+			anchor_y: 'center'
+
+			Label:
+				size_hint_y: None
+				text_size: self.width, None
+				height: self.texture_size[1]
+				padding: dp(10), dp(10)
+				text: root.getChangesInfo()
 
 		BoxLayout:
 			orientation: 'horizontal'
