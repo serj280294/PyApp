@@ -361,13 +361,16 @@ class MainScreen(Screen):
 			self.ids.lastStateLabel.text = self.getLastState()
 
 	def getLastState(self):
+		taskNameLen = 10
+
 		lastEntryNumber = self.getLastEntryNumber()
 
 		if lastEntryNumber == 0:
 			return "No states in database"
 		
 		if self.store.get(str(lastEntryNumber))['date'] == datetime.datetime.today().strftime("%d.%m.%Y"):
-			return "Last state today: " + self.store.get(str(lastEntryNumber))['state']
+			taskName = self.store.get(str(lastEntryNumber))['state']
+			return "Last state today: " + (taskName[:taskNameLen] + "..." if len(taskName) > taskNameLen else taskName)
 		else:
 			return "Last state today: not exist"
 	
